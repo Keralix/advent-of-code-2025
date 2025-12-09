@@ -9,7 +9,28 @@ struct tachyon{
     int loc;
     int value;
 };
-void drawBeam(vector<string> *data, int *sum){
+long dropBox(vector<string> data){
+    int R = data.size();
+    int C = data[0].size();
+    vector<vector<long>> dp(R,vector<long>(C,0));
+    dp[0][(data[0].find('S'))]=1;
+    for(int r =0;r<R-1;r++){
+        for(int c =0;c<C;c++){
+            long val = dp[r][c];
+            if(val==0) continue;
+            if(data[r+1][c]=='^'){
+                dp[r+1][c-1]+=val;
+                dp[r+1][c+1]+=val;
+            }else{
+                dp[r+1][c]+=val;
+            }
+        }
+    }
+    long sum =0;
+    for(int i=0;i<C;i++) sum+=dp[R-1][i];
+    return sum;    
+}
+void drawBeam(vector<string> *data){
     set<int> beamLoc;
     int size = (*data)[0].size();
     vector<tachyon> timelines;
@@ -43,9 +64,9 @@ int main(){
     while(getline(input,line)){
         map.push_back(line);
     }
-    int sum=0;
-    drawBeam(&map,&sum);
-
+    long sum=0;
+    drawBeam(&map);
+    sum=dropBox(map);
     cout<<sum<<endl;
     return 0;
 }
